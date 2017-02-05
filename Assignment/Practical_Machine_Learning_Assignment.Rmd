@@ -1,0 +1,104 @@
+---
+title: "Practical Machine Learning Assignment - A analysis to predict the manner the exercise was performed"  
+author: "Ashley Machado"
+Date: "February 2 2017"
+output: html_document
+---
+
+### Assignment:
+
+
+### Objective:
+One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. 
+
+In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants and to predict the manner in which they did the exerciseThis is the "classe" variable in the training set. You may use any of the other variables to predict with.
+
+This report describes how model is built, how its cross validated, what can be expected out of sample error, and describe the choices made. Also, prediction model will be used to predict 20 different test cases.
+
+```{r setup, include=FALSE}set
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Data pre-processing: Data cleanup and preliminary exploration:
+Loading data into a dataframe and relavent R packages. The working directory should have the training and testing files. 
+
+```{r, message=FALSE, warning=FALSE}
+
+setwd("~/Data Science/Git Repository/Practical-machine-learning")
+traindatamaster <- read.csv("Assignment/pml-training.csv", header = TRUE)
+
+```
+
+From the dataset, there are 160 variables. But we need predictor variable data from the accelerometers on belt, forearm, arm and dumbell. These variable's names are denoted by _forearm, _arm, _dumbbell and _belt. 
+So, dataframe will be subset to only include those variables and the outcome variable classe. 
+Also excluding variables which have NA and missing observations.
+
+```{r, message=FALSE, warning=FALSE}
+
+missingObs <- sapply(traindatamaster, function (x) any(is.na(x) | x == ""))
+requiredvar <- !missingObs & grepl("belt|[^(fore)]arm|dumbbell|forearm|classe", names(missingObs))
+traindatavar <- names(missingObs)[requiredvar]
+trainingdata <- traindatamaster [ ,traindatavar]
+
+```
+
+This should leave us with 1 factor (classe) outcome variable and other numeric or integer predictor variable types.
+```{r, message=FALSE, warning=FALSE}
+table(sapply(trainingdata[1,], class))
+
+```
+
+List of Predictors and Outcome variables
+```{r, message=FALSE, warning=FALSE}
+colnames(trainingdata)
+```
+
+
+###Data Prediction:
+We will split our preprocessed data into 70% training and 30% testing. Caret package will be used for this prediction. 
+
+We will build a Random Forest Model, building 500 decision trees. The model will be displayed on a plot.
+
+```{r, message=FALSE, warning=FALSE}
+
+require(caret)
+library(randomForest)
+library(ggplot2)
+
+set.seed(9876)
+
+intrain <- createDataPartition(trainingdata$classe, p=0.7, list = FALSE )
+training <- trainingdata[intrain,]
+testing <- trainingdata[-intrain,]
+
+randforestModel <- randomForest(classe~., data = training, ntree = 500)
+
+
+```
+
+Summarizing the result of the random forest model and plotting the model to identify the pattern between error  and the decision trees
+
+```{r, message=FALSE, warning=FALSE}
+randforestModel
+
+plot(randforestModel, main ="Random Forest Model")
+
+```
+
+From the random forest model, the resulting predictors have a low error(OOB) rate with 7 variables tried at each split. Also, the plot indicates that after 100 decision trees, there is not a significant reduction in error rate.
+
+Dotcharting the variable importance for the model
+```{r, message=FALSE, warning=FALSE}
+varImpPlot(randforestModel)
+
+```
+
+
+Applying the training predictor on the testing data which is a subsample of training data. We will use the confusionmatrix method to cross tabulate observed and predicted values.
+```{r, message=FALSE, warning=FALSE}
+predictTest <- predict(randforestModel, newdata = testing)
+
+confusionMatrix(predictTest, testing$classe)
+```
+
+From the graph, we see that Kappa indicator and accuracy  indicate that predictors have a low error rate.
