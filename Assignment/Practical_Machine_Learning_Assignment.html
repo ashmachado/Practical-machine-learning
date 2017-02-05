@@ -122,11 +122,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="assignment" class="section level3">
-<h3>Assignment:</h3>
-</div>
-<div id="objective" class="section level3">
-<h3>Objective:</h3>
+<div id="assignment-objective" class="section level3">
+<h3>Assignment Objective:</h3>
 <p>One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it.</p>
 <p>In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants and to predict the manner in which they did the exerciseThis is the “classe” variable in the training set. You may use any of the other variables to predict with.</p>
 <p>This report describes how model is built, how its cross validated, what can be expected out of sample error, and describe the choices made. Also, prediction model will be used to predict 20 different test cases.</p>
@@ -241,7 +238,15 @@ confusionMatrix(predictTest, testing$classe)</code></pre>
 ## Detection Rate         0.2845   0.1920   0.1737   0.1623   0.1833
 ## Detection Prevalence   0.2853   0.1927   0.1760   0.1624   0.1835
 ## Balanced Accuracy      0.9994   0.9956   0.9966   0.9952   0.9985</code></pre>
-<p>From the graph, we see that Kappa indicator and accuracy indicate that predictors have a low error rate.</p>
+<p>From the graph, we see that Kappa indicator and accuracy indicate that predictors have a low error rate. Random forest is the best suited prediction model for the data set. This model will be verified for the 20 test cases.</p>
+</div>
+<div id="applying-my-machine-learning-algorithm-to-the-20-test-cases-available-in-the-test-data-file-pml-testing.csv" class="section level3">
+<h3>Applying my machine learning algorithm to the 20 test cases available in the test data file pml-testing.csv</h3>
+<p>Loading the data and applying the model</p>
+<pre class="r"><code>setwd(&quot;~/Data Science/Git Repository/Practical-machine-learning&quot;)
+
+testdata &lt;- read.csv(&quot;Assignment/pml-testing.csv&quot;, header = TRUE)
+testpred &lt;- predict(randforestModel, newdata = testdata)</code></pre>
 </div>
 
 

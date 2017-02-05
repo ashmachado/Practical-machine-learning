@@ -5,10 +5,7 @@ Date: "February 2 2017"
 output: html_document
 ---
 
-### Assignment:
-
-
-### Objective:
+### Assignment Objective:
 One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. 
 
 In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants and to predict the manner in which they did the exerciseThis is the "classe" variable in the training set. You may use any of the other variables to predict with.
@@ -101,4 +98,15 @@ predictTest <- predict(randforestModel, newdata = testing)
 confusionMatrix(predictTest, testing$classe)
 ```
 
-From the graph, we see that Kappa indicator and accuracy  indicate that predictors have a low error rate.
+From the graph, we see that Kappa indicator and accuracy  indicate that predictors have a low error rate. Random forest is the best suited prediction model for the data set. This model will be verified for the 20 test cases.
+
+### Applying my  machine learning algorithm to the 20 test cases available in the test data file pml-testing.csv
+
+Loading the data and applying the model
+```{r, message=FALSE, warning=FALSE}
+setwd("~/Data Science/Git Repository/Practical-machine-learning")
+
+testdata <- read.csv("Assignment/pml-testing.csv", header = TRUE)
+testpred <- predict(randforestModel, newdata = testdata)
+
+```
